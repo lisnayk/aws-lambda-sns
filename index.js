@@ -1,5 +1,3 @@
-require('dotenv').config()
-const mysql = require('mysql2');
 const md5 = require('md5');
 const dbConfig = {
     host: process.env.DB_HOST,
@@ -7,15 +5,11 @@ const dbConfig = {
     database: process.env.DB_DATABASE,
     port: process.env.DB_PORT,
     password: process.env.DB_PASSWORD
-}
-const connection = mysql.createConnection(dbConfig);
-
-module.exports.handler = (event, context, callback) => {
-    // allows for using callbacks as finish/error-handlers
-    context.callbackWaitsForEmptyEventLoop = false;
-
+};
+const mysql = require('serverless-mysql')({config: dbConfig});
+module.exports.handler = async (event) => {
     const date = new Date();
-    const result = connection.execute(
+    const result = await mysql.query(
         "INSERT INTO `fire_alarms` \
         (`imei`, `iccid`, `created_by`, `created_at`, `updated_at`) \
         VALUES (?, ?, ?, ?, ?);",
@@ -25,10 +19,7 @@ module.exports.handler = (event, context, callback) => {
             event.created_by ?? 1,
             date.toLocaleDateString(),
             date.toLocaleDateString(),
-        ], function (err, results) {
-            if (err) {
-                throw err
-            }
-            callback(null, results);
-        });
+        ]);
+    await mysql.end()
+    return result
 };
