@@ -8,18 +8,40 @@ const dbConfig = {
 };
 const mysql = require('serverless-mysql')({config: dbConfig});
 module.exports.handler = async (event) => {
-    const date = new Date();
-    const result = await mysql.query(
-        "INSERT INTO `fire_alarms` \
-        (`imei`, `iccid`, `created_by`, `created_at`, `updated_at`) \
-        VALUES (?, ?, ?, ?, ?);",
-        [
-            event.imei ?? 'imai-' + md5(date.getMilliseconds()),
-            event.iccid ?? 'iccid-' + md5(date.getMilliseconds()),
-            event.created_by ?? 1,
-            date.toLocaleDateString(),
-            date.toLocaleDateString(),
-        ]);
+    let result = "Nothing to insert";
+    if (await isDeviceExist(event.device.id)) {
+        result = await insertEvent(event);
+    }
     await mysql.end()
-    return result
+    return result;
 };
+
+/**
+ * isDeviceExist
+ * @param deviceId
+ * @return {Promise<*>}
+ */
+async function isDeviceExist(deviceId) {
+    const result = await mysql.query("SELECT id, device_id FROM `easyset_devices` WHERE `device_id` =  ?;", [deviceId]);
+    return result.length;
+}
+
+/**
+ * insertEvent
+ * @param event
+ * @return {Promise<unknown>}
+ */
+function insertEvent(event) {
+    return mysql.query(
+        "INSERT INTO `easyset_device_logs`\
+            (`device_id`,`event_type`,`time`,`output`,`extra_info`)\
+        VALUES (?,?,?,?,?);",
+        [
+            event.device.id,
+            event.payload.event_name ?? null,
+            event.payload.time ?? null,
+            event.payload.output ?? null,
+            event.payload.extra_info ?? null,
+        ]
+    );
+}

@@ -6,7 +6,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "deploy": "serverless deploy",
-    "run": "serverless invoke -f main"
+    "deploy-prod": "serverless deploy --aws-profile lambda",
+    "run": "serverless invoke -f main",
+    "remove": "serverless remove"
   },
   "author": "",
   "license": "ISC",
