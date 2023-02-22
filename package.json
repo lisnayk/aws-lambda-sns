@@ -8,7 +8,8 @@
     "deploy": "serverless deploy",
     "deploy-prod": "serverless deploy --aws-profile lambda",
     "run": "serverless invoke -f main",
-    "remove": "serverless remove"
+    "remove": "serverless remove",
+    "remove-dev": "serverless remove --aws-profile lambda"
   },
   "author": "",
   "license": "ISC",
