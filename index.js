@@ -35,14 +35,24 @@ async function isDeviceExist(deviceId) {
 function insertEvent(event) {
     return mysql.query(
         "INSERT INTO `easyset_device_logs`\
-            (`device_id`,`event_type`,`time`,`output`,`extra_info`)\
-        VALUES (?,?,?,?,?);",
+            (`device_id`,`pin_id`,`event_type`,`time`,`output`,`extra_info`)\
+        VALUES (?,?,?,?,?,?);",
         [
             event.device.id,
+            extractPinId(event),
             event.payload.event_name ?? null,
             event.payload.time ?? null,
             event.payload.output ?? null,
             event.payload.extra_info ?? null,
         ]
     );
+}
+
+/**
+ * function extractPinId(event){
+ * @param event
+ * @return {string}
+ */
+function extractPinId(event){
+    return event.payload.user.split("_")[0];
 }
