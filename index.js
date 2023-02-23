@@ -8,9 +8,10 @@ const dbConfig = {
 };
 const mysql = require('serverless-mysql')({config: dbConfig});
 module.exports.handler = async (event) => {
+    const data = JSON.parse(event.Records[0].Sns.Message);
     let result = "Nothing to insert";
-    if (await isDeviceExist(event.device.id)) {
-        result = await insertEvent(event);
+    if (await isDeviceExist(data.device.id)) {
+        result = await insertEvent(data);
     }
     await mysql.end()
     return result;
