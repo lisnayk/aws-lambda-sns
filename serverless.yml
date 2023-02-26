@@ -7,3 +7,7 @@ provider:
 functions:
   main:
     handler: index.handler
+  signal:
+    handler: index.signalHandler
+  status:
+    handler: index.statusHandler

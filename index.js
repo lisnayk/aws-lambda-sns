@@ -16,7 +16,16 @@ module.exports.handler = async (event) => {
     await mysql.end()
     return result;
 };
-
+module.exports.statusHandler = async (event) => {
+    const data = JSON.parse(event.Records[0].Sns.Message);
+    console.log(data);
+    return result;
+};
+module.exports.signalHandler = async (event) => {
+    const data = JSON.parse(event.Records[0].Sns.Message);
+    console.log(data);
+    return result;
+};
 /**
  * isDeviceExist
  * @param deviceId
