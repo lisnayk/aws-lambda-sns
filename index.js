@@ -1,5 +1,6 @@
 const md5 = require('md5');
 const Pusher = require("pusher")
+const utils = require("./utils/index");
 const dbConfig = {
     host: process.env.DB_HOST,
     user: process.env.DB_USERNAME,
@@ -22,11 +23,9 @@ module.exports.statusHandler = async (event) => {
     console.log("statusHandler: ", data.device.id);
     let res = "No device";
     if (await isDeviceExist(data.device.id)) {
-        const payload = {
-            device: data.device.id,
-            signal: data.payload.data,
-            status: data.device.device_status
-        }
+        let payload = utils.parseDeviceStatus(data.payload.data);
+        payload.device = data.device.id;
+        payload.status = data.device.device_status
         res = await broadcast("easyset-device-status", "status-changed", payload);
     }
     await mysql.end();
@@ -40,11 +39,9 @@ module.exports.disconnectedHandler = async (event) => {
     let res = "No device";
     console.log("statusHandler: ", data.device.id);
     if (await isDeviceExist(data.device.id)) {
-        const payload = {
-            device: data.device.id,
-            signal: data.payload.data,
-            status: data.device.device_status
-        }
+        let payload = utils.parseDeviceStatus(data.payload.data);
+        payload.device = data.device.id;
+        payload.status = data.device.device_status
         res = await broadcast("easyset-device-status", "device-disconnected", payload);
     }
     await mysql.end();
