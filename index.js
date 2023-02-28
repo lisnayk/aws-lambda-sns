@@ -19,6 +19,7 @@ module.exports.handler = async (event) => {
 };
 module.exports.statusHandler = async (event) => {
     const data = JSON.parse(event.Records[0].Sns.Message);
+    console.log("statusHandler: ", data.device.id);
     let res = "No device";
     if (await isDeviceExist(data.device.id)) {
         const payload = {
@@ -37,6 +38,7 @@ module.exports.statusHandler = async (event) => {
 module.exports.disconnectedHandler = async (event) => {
     const data = JSON.parse(event.Records[0].Sns.Message);
     let res = "No device";
+    console.log("statusHandler: ", data.device.id);
     if (await isDeviceExist(data.device.id)) {
         const payload = {
             device: data.device.id,

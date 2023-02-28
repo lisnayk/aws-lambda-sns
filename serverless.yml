@@ -8,6 +8,6 @@ functions:
   main:
     handler: index.handler
   signal:
-    handler: index.signalHandler
+    handler: index.statusHandler
   status:
     handler: index.disconnectedHandler
