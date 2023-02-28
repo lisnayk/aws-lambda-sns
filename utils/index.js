@@ -12,9 +12,9 @@ module.exports.parseDeviceStatus = (str) => {
     };
     let m;
     while ((m = regex.exec(str)) !== null) {
-        response.signal = m[1];
-        response.network_id = m[2];
-        response.network_type = m[3];
+        response.signal = m[1].trim();
+        response.network_id = m[2].trim();
+        response.network_type = m[3].trim();
     }
     return response;
 }
