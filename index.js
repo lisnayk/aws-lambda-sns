@@ -16,16 +16,33 @@ module.exports.handler = async (event) => {
     await mysql.end()
     return result;
 };
-module.exports.statusHandler = (event) => {
+module.exports.statusHandler = async (event) => {
     const data = JSON.parse(event.Records[0].Sns.Message);
-    console.log(data);
-    return 0;
+    const payload = {
+        device: data.device.id,
+        signal: data.payload.data,
+        status: data.device.device_status
+    }
+    const res = await broadcast("easyset-device-disconnect-status", "device-disconnected", payload);
+    return {
+        status: 200,
+        data: res,
+    };
 };
-module.exports.signalHandler = (event) => {
+module.exports.signalHandler = async (event) => {
     const data = JSON.parse(event.Records[0].Sns.Message);
-    console.log(data);
-    return 0;
+    const payload = {
+        device: data.device.id,
+        signal: data.payload.data,
+        status: data.device.device_status
+    }
+    const res = await broadcast("easyset-device-disconnect-status", "device-disconnected", payload);
+    return {
+        status: 200,
+        data: res,
+    };
 };
+
 /**
  * isDeviceExist
  * @param deviceId
@@ -62,6 +79,24 @@ function insertEvent(event) {
  * @param event
  * @return {string}
  */
-function extractPinId(event){
+function extractPinId(event) {
     return event.payload.user.split("_")[0];
+}
+
+/**
+ * broadcast via Pusher
+ * @param channel
+ * @param event
+ * @param data
+ * @return {Promise<Response>}
+ */
+async function broadcast(channel, event, data) {
+    const pusher = new Pusher({
+        appId: process.env.PUSHER_APP,
+        key: process.env.PUSHER_KEY,
+        secret: process.env.PUSHER_SECRET,
+        cluster: process.env.PUSHER_CLUSTER,
+        useTLS: true
+    });
+    return await pusher.trigger(channel, event, data);
 }

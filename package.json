@@ -16,6 +16,7 @@
   "dependencies": {
     "dotenv": "^16.0.3",
     "md5": "^2.3.0",
+    "pusher": "^5.1.2",
     "serverless-mysql": "^1.5.4"
   }
 }
