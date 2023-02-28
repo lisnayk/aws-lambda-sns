@@ -1,4 +1,5 @@
 const md5 = require('md5');
+const Pusher = require("pusher")
 const dbConfig = {
     host: process.env.DB_HOST,
     user: process.env.DB_USERNAME,
@@ -18,25 +19,33 @@ module.exports.handler = async (event) => {
 };
 module.exports.statusHandler = async (event) => {
     const data = JSON.parse(event.Records[0].Sns.Message);
-    const payload = {
-        device: data.device.id,
-        signal: data.payload.data,
-        status: data.device.device_status
+    let res = "No device";
+    if (await isDeviceExist(data.device.id)) {
+        const payload = {
+            device: data.device.id,
+            signal: data.payload.data,
+            status: data.device.device_status
+        }
+        res = await broadcast("easyset-device-status", "status-changed", payload);
     }
-    const res = await broadcast("easyset-device-disconnect-status", "device-disconnected", payload);
+    await mysql.end();
     return {
         status: 200,
         data: res,
     };
 };
-module.exports.signalHandler = async (event) => {
+module.exports.disconnectedHandler = async (event) => {
     const data = JSON.parse(event.Records[0].Sns.Message);
-    const payload = {
-        device: data.device.id,
-        signal: data.payload.data,
-        status: data.device.device_status
+    let res = "No device";
+    if (await isDeviceExist(data.device.id)) {
+        const payload = {
+            device: data.device.id,
+            signal: data.payload.data,
+            status: data.device.device_status
+        }
+        res = await broadcast("easyset-device-status", "device-disconnected", payload);
     }
-    const res = await broadcast("easyset-device-disconnect-status", "device-disconnected", payload);
+    await mysql.end();
     return {
         status: 200,
         data: res,

@@ -10,4 +10,4 @@ functions:
   signal:
     handler: index.signalHandler
   status:
-    handler: index.statusHandler
+    handler: index.disconnectedHandler
